@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ${{ github.repository_owner }}/${{ github.event.repository.name }}
 
 jobs:
   build-and-deploy:
@@ -47,7 +47,8 @@ jobs:
 
       - name: Update docker-compose-prod.yml with image tag
         run: |
-          IMAGE_TAG="${REGISTRY}/${IMAGE_NAME}:main-$(git rev-parse --short HEAD)"
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          IMAGE_TAG="${REGISTRY}/${REPO_LOWER}:main-$(git rev-parse --short HEAD)"
           sed -i "s|image:.*|image: ${IMAGE_TAG}|g" docker-compose-prod.yml
           cat docker-compose-prod.yml
 
